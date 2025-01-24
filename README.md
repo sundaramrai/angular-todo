@@ -1,7 +1,37 @@
-<<<<<<< HEAD
 # MyTodoCrud
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.1.
+This project is a simple Todo application built with Angular. It allows users to register, log in, and manage their todo items. The application includes features such as adding, editing, deleting, and toggling the completion status of todo items.
+
+## Table of Contents
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Development Server](#development-server)
+- [Code Scaffolding](#code-scaffolding)
+- [Building](#building)
+- [Running Unit Tests](#running-unit-tests)
+- [Running End-to-End Tests](#running-end-to-end-tests)
+- [Additional Resources](#additional-resources)
+- [Additional Resources](#additional-resources)
+- [License](#license)
+
+## Features
+
+- User registration and login
+- Add, edit, delete, and toggle completion status of todo items
+- Persistent storage using local storage
+- Automatic logout after 12 hours of inactivity
+
+## Getting Started
+
+To get started with this project, follow these steps:
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/your-username/my-todo-crud.git
+   cd my-todo-crud
+   ```
 
 ## Development server
 
@@ -58,6 +88,7 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-=======
-# angular-todo
->>>>>>> 94f93999ed442c8ee9915ec469178809079364ae
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
