@@ -34,7 +34,7 @@ export class TodosComponent implements OnInit {
     if (this.username) {
       const storedTodos = localStorage.getItem(`todos_${this.username}`);
       this.todos = storedTodos ? JSON.parse(storedTodos) : [];
-      console.log('Loaded todos from localStorage:', this.todos);
+      // console.log('Loaded todos from localStorage:', this.todos);
     }
   }
 
@@ -48,22 +48,22 @@ export class TodosComponent implements OnInit {
     todo.id = Date.now();
     this.todos.push(todo);
     this.saveToLocalStorage();
-    console.log('Added new todo:', {
-      title: todo.title,
-      description: todo.description,
-      id: todo.id,
-      timestamp: new Date().toLocaleString(),
-    });
+    // console.log('Added new todo:', {
+    //   title: todo.title,
+    //   description: todo.description,
+    //   id: todo.id,
+    //   timestamp: new Date().toLocaleString(),
+    // });
   }
 
   deleteTodo(todo: Todo) {
     this.todos = this.todos.filter((t) => t.id !== todo.id);
     this.saveToLocalStorage();
-    console.log('Deleted todo:', {
-      title: todo.title,
-      id: todo.id,
-      timestamp: new Date().toLocaleString(),
-    });
+    // console.log('Deleted todo:', {
+    //   title: todo.title,
+    //   id: todo.id,
+    //   timestamp: new Date().toLocaleString(),
+    // });
   }
 
   updateTodo(updatedTodo: Todo) {
@@ -72,14 +72,14 @@ export class TodosComponent implements OnInit {
       const oldTodo = { ...this.todos[index] };
       this.todos[index] = updatedTodo;
       this.saveToLocalStorage();
-      console.log('Updated todo:', {
-        id: updatedTodo.id,
-        oldTitle: oldTodo.title,
-        newTitle: updatedTodo.title,
-        oldDescription: oldTodo.description,
-        newDescription: updatedTodo.description,
-        timestamp: new Date().toLocaleString(),
-      });
+      // console.log('Updated todo:', {
+      //   id: updatedTodo.id,
+      //   oldTitle: oldTodo.title,
+      //   newTitle: updatedTodo.title,
+      //   oldDescription: oldTodo.description,
+      //   newDescription: updatedTodo.description,
+      //   timestamp: new Date().toLocaleString(),
+      // });
     }
   }
 
@@ -88,12 +88,12 @@ export class TodosComponent implements OnInit {
     if (index !== -1) {
       this.todos[index].completed = !this.todos[index].completed;
       this.saveToLocalStorage();
-      console.log('Toggled todo completion:', {
-        title: todo.title,
-        id: todo.id,
-        completed: this.todos[index].completed,
-        timestamp: new Date().toLocaleString(),
-      });
+      // console.log('Toggled todo completion:', {
+      //   title: todo.title,
+      //   id: todo.id,
+      //   completed: this.todos[index].completed,
+      //   timestamp: new Date().toLocaleString(),
+      // });
     }
   }
 }
