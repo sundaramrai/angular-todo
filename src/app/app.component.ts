@@ -9,7 +9,7 @@ import { Router, NavigationEnd } from '@angular/router';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'TaskMaster';
+  title = 'TascMaster';
   isLoginPage = false;
   isRegisterPage = false;
   isLoggedIn = false;
