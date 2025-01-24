@@ -1,4 +1,4 @@
-# MyTodoCrud
+# TascMaster
 
 This project is a simple Todo application built with Angular. It allows users to register, log in, and manage their todo items. The application includes features such as adding, editing, deleting, and toggling the completion status of todo items.
 
