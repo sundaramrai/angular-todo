@@ -58,6 +58,7 @@ export class AppComponent implements OnInit {
         this.logout();
       } else {
         this.setLogoutTimer(twelveHours - (currentTime - parseInt(loginTimestamp, 10)));
+        this.router.navigate(['/todo']);
       }
     }
   }
@@ -73,7 +74,7 @@ export class AppComponent implements OnInit {
     localStorage.removeItem('loginTimestamp');
     this.isLoggedIn = false;
     this.router.navigate(['/login']);
-    // console.log('User logged out automatically after 12 hours');
+    console.log('User logged out automatically after 12 hours');
   }
 
   onLogin() {
@@ -93,10 +94,6 @@ export class AppComponent implements OnInit {
   }
 
   onLogout() {
-    localStorage.removeItem('loggedInUser');
-    localStorage.removeItem('loginTimestamp');
-    this.isLoggedIn = false;
-    this.router.navigate(['/login']);
-    // console.log('User logged out manually', this.isLoggedIn);
+    this.logout();
   }
 }

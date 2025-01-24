@@ -97,10 +97,10 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('loginTimestamp', Date.now().toString());
       this.setLogoutTimer();
       this.router.navigate(['/todo']);
-      // console.log('Login successful:', this.loginForm.value);
+      console.log('Login successful:', this.loginForm.value);
     } else {
       this.errorMessage = 'Invalid username or password';
-      // console.log('Login failed:', this.loginForm.value);
+      console.log('Login failed:', this.loginForm.value);
     }
   }
 
@@ -115,7 +115,7 @@ export class LoginComponent implements OnInit {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('loginTimestamp');
     this.router.navigate(['/login']);
-    // console.log('User logged out automatically after 12 hours');
+    console.log('User logged out automatically after 12 hours');
   }
 
   onRegister() {
