@@ -1,0 +1,72 @@
+<!-- src/app/components/login/login.component.html -->
+<div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 70px);">
+  <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%">
+    <div class="container mt-4" style="width: 100%">
+      <h2 class="mb-4 text-center">Login Page</h2>
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            formControlName="username"
+            required
+          />
+          <div
+            *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            class="text-danger"
+          >
+            <div *ngIf="loginForm.get('username')?.hasError('required')">
+              Username is required
+            </div>
+            <div *ngIf="loginForm.get('username')?.hasError('invalidUsername')">
+              Invalid username
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            required
+          />
+          <div
+            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            class="text-danger"
+          >
+            <div *ngIf="loginForm.get('password')?.hasError('required')">
+              Password is required
+            </div>
+            <div *ngIf="loginForm.get('password')?.hasError('minlength')">
+              Password: Min 8 characters
+            </div>
+            <div *ngIf="loginForm.get('password')?.hasError('invalidPassword')">
+              Password: 2 digits, 1 special, 2 uppercase, lowercase
+            </div>
+          </div>
+        </div>
+        <div class="d-grid mb-3">
+          <button type="button" class="btn btn-primary" (click)="onRegister()">
+            Already have an account? Register
+          </button>
+        </div>
+        <div *ngIf="errorMessage" class="text-danger mb-3">
+          {{ errorMessage }}
+        </div>
+        <div class="d-grid mb-3">
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="loginForm.invalid"
+          >
+            Login
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+<!-- src/app/components/register/register.component.html -->
+<div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 70px);">
+  <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%">
+    <div class="container mt-4" style="width: 100%">
+      <h2 class="mb-4 text-center">Register Page</h2>
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+
+        <!-- Email Field -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            formControlName="email"
+            required
+          />
+          <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
+            <div *ngIf="registerForm.get('email')?.hasError('required')">Email is required</div>
+            <div *ngIf="registerForm.get('email')?.hasError('email')">Please enter a valid email address</div>
+            <div *ngIf="registerForm.get('email')?.hasError('invalidEmailFormat')">Please enter a valid email format (e.g., user&#64;example.com)</div>
+            <div *ngIf="registerForm.get('email')?.hasError('invalidEmailDomain')">Please provide a valid domain in the email address</div>
+            <div *ngIf="registerForm.get('email')?.hasError('emailExists')">Email already exists</div>
+          </div>
+        </div>
+
+        <!-- Username Field -->
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            formControlName="username"
+            required
+            (input)="onUsernameInput($event)"
+          />
+          <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="text-danger">
+            <div *ngIf="registerForm.get('username')?.hasError('required')">Username is required</div>
+            <div *ngIf="registerForm.get('username')?.hasError('maxlength')">Username cannot exceed 15 characters</div>
+            <div *ngIf="registerForm.get('username')?.hasError('minlength')">Username must contain at least 3 characters</div>
+            <div *ngIf="registerForm.get('username')?.hasError('invalidUsername')">Username cannot be only numbers, only an underscore, and can only contain letters, numbers, and underscores</div>
+            <div *ngIf="registerForm.get('username')?.hasError('usernameExists')">Username already exists</div>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            required
+          />
+          <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
+            <div *ngIf="registerForm.get('password')?.hasError('required')">Password is required</div>
+            <div *ngIf="registerForm.get('password')?.hasError('minlength')">Password: Min 8 characters</div>
+            <div *ngIf="registerForm.get('password')?.hasError('invalidPassword')">Password: 2 digits, 1 special, 2 uppercase, lowercase</div>
+          </div>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            required
+          />
+          <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="text-danger">
+            Confirm Password is required
+          </div>
+        </div>
+
+        <!-- Phone Numbers Field -->
+        <div formArrayName="phoneNumbers" class="mb-3">
+          <label class="form-label">Phone Numbers</label>
+          <div *ngFor="let phone of phoneNumbers.controls; let i = index" [formGroupName]="i" class="mb-2">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                formControlName="number"
+                required
+                maxlength="10"
+                pattern="[0-9]*"
+                (input)="onPhoneNumberInput($event, i)"
+              />
+              <button type="button" class="btn btn-danger ms-2" (click)="removePhoneNumber(i)">Remove</button>
+            </div>
+            <div *ngIf="phone.get('number')?.invalid && phone.get('number')?.touched" class="text-danger mt-1">
+              <ng-container *ngIf="phone.get('number')?.errors?.['required']">Phone number is required</ng-container>
+              <ng-container *ngIf="phone.get('number')?.errors?.['invalidPhoneNumber']">Enter a valid 10-digit phone number</ng-container>
+            </div>
+          </div>
+          <button type="button" class="btn btn-warning" (click)="addPhoneNumber()">Add Phone Number</button>
+        </div>
+
+        <!-- Submit and Navigation Buttons -->
+        <div class="d-grid mb-3">
+          <button class="btn btn-primary" (click)="onLogin()">Already have an account? Login</button>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-success mb-4" [disabled]="registerForm.invalid">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
