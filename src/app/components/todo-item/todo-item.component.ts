@@ -19,21 +19,21 @@ export class TodoItemComponent {
   editDescription: string = '';
 
   onDelete() {
-    console.log('Initiating delete for todo:', {
-      title: this.todo.title,
-      id: this.todo.id,
-      timestamp: new Date().toLocaleString(),
-    });
+    // console.log('Initiating delete for todo:', {
+    //   title: this.todo.title,
+    //   id: this.todo.id,
+    //   timestamp: new Date().toLocaleString(),
+    // });
     this.todoDelete.emit(this.todo);
   }
 
   onToggleComplete() {
-    console.log('Initiating toggle completion for todo:', {
-      title: this.todo.title,
-      id: this.todo.id,
-      currentStatus: this.todo.completed,
-      timestamp: new Date().toLocaleString(),
-    });
+    // console.log('Initiating toggle completion for todo:', {
+    //   title: this.todo.title,
+    //   id: this.todo.id,
+    //   currentStatus: this.todo.completed,
+    //   timestamp: new Date().toLocaleString(),
+    // });
     this.todoToggle.emit(this.todo);
   }
 
@@ -41,11 +41,11 @@ export class TodoItemComponent {
     this.isEditing = true;
     this.editTitle = this.todo.title;
     this.editDescription = this.todo.description;
-    console.log('Started editing todo:', {
-      id: this.todo.id,
-      title: this.todo.title,
-      timestamp: new Date().toLocaleString(),
-    });
+    // console.log('Started editing todo:', {
+    //   id: this.todo.id,
+    //   title: this.todo.title,
+    //   timestamp: new Date().toLocaleString(),
+    // });
   }
 
   saveEdit() {
@@ -56,14 +56,14 @@ export class TodoItemComponent {
         description: this.editDescription,
       };
 
-      console.log('Saving edited todo:', {
-        id: this.todo.id,
-        oldTitle: this.todo.title,
-        newTitle: this.editTitle,
-        oldDescription: this.todo.description,
-        newDescription: this.editDescription,
-        timestamp: new Date().toLocaleString(),
-      });
+      // console.log('Saving edited todo:', {
+      //   id: this.todo.id,
+      //   oldTitle: this.todo.title,
+      //   newTitle: this.editTitle,
+      //   oldDescription: this.todo.description,
+      //   newDescription: this.editDescription,
+      //   timestamp: new Date().toLocaleString(),
+      // });
 
       this.todoUpdate.emit(updatedTodo);
       this.isEditing = false;
@@ -71,11 +71,11 @@ export class TodoItemComponent {
   }
 
   cancelEdit() {
-    console.log('Cancelled editing todo:', {
-      id: this.todo.id,
-      title: this.todo.title,
-      timestamp: new Date().toLocaleString(),
-    });
+    // console.log('Cancelled editing todo:', {
+    //   id: this.todo.id,
+    //   title: this.todo.title,
+    //   timestamp: new Date().toLocaleString(),
+    // });
     this.isEditing = false;
   }
 }
