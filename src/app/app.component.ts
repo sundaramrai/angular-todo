@@ -9,7 +9,7 @@ import { Router, NavigationEnd } from '@angular/router';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'My Todo CRUD';
+  title = 'TaskMaster';
   isLoginPage = false;
   isRegisterPage = false;
   isLoggedIn = false;
