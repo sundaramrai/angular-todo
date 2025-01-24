@@ -22,7 +22,6 @@ export class AddTodoComponent {
         description: this.todoDescription,
         completed: false,
       };
-
       // console.log('Creating new todo:', {
       //   title: this.todoTitle,
       //   description: this.todoDescription,
