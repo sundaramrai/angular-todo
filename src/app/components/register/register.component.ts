@@ -37,7 +37,7 @@ export class RegisterComponent implements OnInit {
     }
     // Log all registered users stored in local storage
     const registeredUsers = JSON.parse(localStorage.getItem('registerData') || '[]');
-    console.log('Registered Users:', registeredUsers);
+    // console.log('Registered Users:', registeredUsers);
   }
 
   get phoneNumbers(): FormArray {
@@ -240,7 +240,7 @@ export class RegisterComponent implements OnInit {
     let existingData = JSON.parse(localStorage.getItem('registerData') || '[]');
 
     if (!Array.isArray(existingData)) {
-      console.error('Data in localStorage is not an array. Initializing as empty array.');
+      // console.error('Data in localStorage is not an array. Initializing as empty array.');
       existingData = [];
     }
 
@@ -255,7 +255,7 @@ export class RegisterComponent implements OnInit {
     this.phoneNumbers.push(this.createPhoneNumber());
     // this.addresses.push(this.createAddress());
     this.router.navigate(['/']);
-    console.log('New User registered:', newUser);
+    // console.log('New User registered:', newUser);
   }
 
   onLogin() {
