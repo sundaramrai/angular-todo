@@ -23,11 +23,11 @@ export class AddTodoComponent {
         completed: false,
       };
 
-      console.log('Creating new todo:', {
-        title: this.todoTitle,
-        description: this.todoDescription,
-        timestamp: new Date().toLocaleString(),
-      });
+      // console.log('Creating new todo:', {
+      //   title: this.todoTitle,
+      //   description: this.todoDescription,
+      //   timestamp: new Date().toLocaleString(),
+      // });
 
       this.todoAdd.emit(newTodo);
       this.todoTitle = '';
