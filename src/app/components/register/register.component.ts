@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of, map, delay } from 'rxjs';
+// import { of, map, delay } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -17,12 +17,10 @@ export class RegisterComponent implements OnInit {
   constructor(private fb: FormBuilder, private router: Router) {
     this.registerForm = this.fb.group({
       // similar to username do for email
-      email: ['', [Validators.required, this.localEmailValidator], [this.existingEmailValidator()]],
-      username: [
-        '',
-        [Validators.required, this.localUsernameValidator],
-        [this.existingUsernameValidator()]
-      ],
+      email: ['', [Validators.required, this.localEmailValidator], [this.existingEmailValidator]],
+      // email: ['', [Validators.required, this.localEmailValidator], [this.existingEmailValidator()]],
+      // username: ['', [Validators.required, this.localUsernameValidator], [this.existingUsernameValidator()] ],
+      username: ['',[Validators.required, this.localUsernameValidator, this.existingUsernameValidator],],
       password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
       confirmPassword: ['', Validators.required],
       phoneNumbers: this.fb.array([this.createPhoneNumber()]),
@@ -97,22 +95,35 @@ export class RegisterComponent implements OnInit {
   }
 
   // New async validator to check if username exists
-  existingUsernameValidator(): AsyncValidatorFn {
-    return (control: AbstractControl) => {
-      const username = control.value;
+  // This is used in the case when HTTP requests are made to server to check if username exists
+  // existingUsernameValidator(): AsyncValidatorFn {
+  //   return (control: AbstractControl) => {
+  //     const username = control.value;
 
-      // Simulate an API call to check username (using local storage here)
-      return of(localStorage.getItem('registerData'))
-        .pipe(
-          delay(500), // Simulate network latency
-          map((data) => {
-            const registeredUsers = JSON.parse(data || '[]');
-            const exists = registeredUsers.some((user: any) => user.username === username);
+  //     // Simulate an API call to check username (using local storage here)
+  //     return of(localStorage.getItem('registerData'))
+  //       .pipe(
+  //         delay(500), // Simulate network latency
+  //         map((data) => {
+  //           const registeredUsers = JSON.parse(data || '[]');
+  //           const exists = registeredUsers.some((user: any) => user.username === username);
 
-            return exists ? { usernameExists: true } : null;
-          })
-        );
-    };
+  //           return exists ? { usernameExists: true } : null;
+  //         })
+  //       );
+  //   };
+  // }
+
+  // This is used in the case when we want to check if username exists synchronously (without making HTTP requests)
+  existingUsernameValidator(control: AbstractControl): ValidationErrors | null {
+    const username = control.value;
+
+    // Simulate an API call to check username (using local storage here)
+    const data = localStorage.getItem('registerData');
+    const registeredUsers = JSON.parse(data || '[]');
+    const exists = registeredUsers.some((user: any) => user.username === username);
+
+    return exists ? { usernameExists: true } : null;
   }
 
   onUsernameInput(event: any) {
@@ -207,21 +218,31 @@ export class RegisterComponent implements OnInit {
     return { invalidEmailDomain: true };
   }
 
-  existingEmailValidator(): AsyncValidatorFn {
-    return (control: AbstractControl) => {
-      const email = control.value;
+  // existingEmailValidator(): AsyncValidatorFn {
+  //   return (control: AbstractControl) => {
+  //     const email = control.value;
 
-      return of(localStorage.getItem('registerData'))
-        .pipe(
-          delay(500), // Simulate network latency
-          map((data) => {
-            const registeredUsers = JSON.parse(data || '[]');
-            const exists = registeredUsers.some((user: any) => user.email === email);
+  //     return of(localStorage.getItem('registerData'))
+  //       .pipe(
+  //         delay(500), // Simulate network latency
+  //         map((data) => {
+  //           const registeredUsers = JSON.parse(data || '[]');
+  //           const exists = registeredUsers.some((user: any) => user.email === email);
 
-            return exists ? { emailExists: true } : null;
-          })
-        );
-    };
+  //           return exists ? { emailExists: true } : null;
+  //         })
+  //       );
+  //   };
+  // }
+
+  existingEmailValidator(control: AbstractControl): ValidationErrors | null {
+    const email = control.value;
+
+    const data = localStorage.getItem('registerData');
+    const registeredUsers = JSON.parse(data || '[]');
+    const exists = registeredUsers.some((user: any) => user.email === email);
+
+    return exists ? { emailExists: true } : null;
   }
 
   onRegister() {
