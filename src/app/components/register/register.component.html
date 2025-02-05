@@ -78,7 +78,7 @@
 
         <!-- Phone Numbers Field -->
         <div formArrayName="phoneNumbers" class="mb-3">
-          <label class="form-label">Phone Numbers</label>
+          <label *ngIf="phoneNumbers.length > 0" class="form-label">Phone Numbers</label>
           <div *ngFor="let phone of phoneNumbers.controls; let i = index" [formGroupName]="i" class="mb-2">
             <div class="input-group">
               <input
@@ -97,7 +97,11 @@
               <ng-container *ngIf="phone.get('number')?.errors?.['invalidPhoneNumber']">Enter a valid 10-digit phone number</ng-container>
             </div>
           </div>
-          <button type="button" class="btn btn-warning" (click)="addPhoneNumber()">Add Phone Number</button>
+          <div *ngIf="phoneNumbers.length === 0" class="d-flex justify-content-between">
+            <span class="text-muted">Phone Numbers</span>
+            <button type="button" class="btn btn-warning" (click)="addPhoneNumber()">Add Phone Number</button>
+          </div>
+          <button *ngIf="phoneNumbers.length > 0" type="button" class="btn btn-warning mt-3" (click)="addPhoneNumber()">Add Phone Number</button>
         </div>
 
         <!-- Submit and Navigation Buttons -->
