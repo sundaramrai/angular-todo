@@ -92,16 +92,16 @@
               />
               <button type="button" class="btn btn-danger ms-2" (click)="removePhoneNumber(i)">Remove</button>
             </div>
-            <div *ngIf="phone.get('number')?.invalid && phone.get('number')?.touched" class="text-danger mt-1">
+            <div *ngIf="phone.get('number')?.invalid && phone.get('number')?.touched" class="text-danger">
               <ng-container *ngIf="phone.get('number')?.errors?.['required']">Phone number is required</ng-container>
               <ng-container *ngIf="phone.get('number')?.errors?.['invalidPhoneNumber']">Enter a valid 10-digit phone number</ng-container>
             </div>
           </div>
-          <div *ngIf="phoneNumbers.length === 0" class="d-flex justify-content-between">
-            <span class="text-muted">Phone Numbers</span>
+          <div *ngIf="phoneNumbers.length === 0" class="d-flex align-items-center justify-content-between" style="gap: 20px;">
+            <span>Phone Number</span>
             <button type="button" class="btn btn-warning" (click)="addPhoneNumber()">Add Phone Number</button>
           </div>
-          <button *ngIf="phoneNumbers.length > 0" type="button" class="btn btn-warning mt-3" (click)="addPhoneNumber()">Add Phone Number</button>
+          <button *ngIf="phoneNumbers.length > 0" type="button" class="btn btn-warning" (click)="addPhoneNumber()">Add Phone Number</button>
         </div>
 
         <!-- Submit and Navigation Buttons -->
