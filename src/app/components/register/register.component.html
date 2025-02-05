@@ -93,7 +93,7 @@
               <button type="button" class="btn btn-danger ms-2" (click)="removePhoneNumber(i)">Remove</button>
             </div>
             <div *ngIf="phone.get('number')?.invalid && phone.get('number')?.touched" class="text-danger">
-              <ng-container *ngIf="phone.get('number')?.errors?.['required']">Phone number is required</ng-container>
+              <ng-container *ngIf="phone.get('number')?.errors?.['required']">Phone number is required<br></ng-container>
               <ng-container *ngIf="phone.get('number')?.errors?.['invalidPhoneNumber']">Enter a valid 10-digit phone number</ng-container>
             </div>
           </div>
