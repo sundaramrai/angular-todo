@@ -9,6 +9,7 @@ import { TodoItemComponent } from './components/todo-item/todo-item.component';
 import { AddTodoComponent } from './components/add-todo/add-todo.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { RegisterComponent } from './components/register/register.component';
     FormsModule,
     ReactiveFormsModule,
     CommonModule, // Add CommonModule to imports
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
