@@ -1,14 +1,12 @@
-// Defines a TypeScript interface `Todo`.
-// Specifies the structure of a todo item.
-// Properties:
-// - `id`: number, unique identifier.
-// - `title`: string, brief summary.
-// - `description`: string, detailed explanation.
-// - `completed`: boolean, task completion status.
-
+// src/app/Todo.ts
 export interface Todo {
-  id: number;
+  id: string;
   title: string;
   description: string;
   completed: boolean;
+  userId?: string; // Added to match API
+}
+
+export interface TodoResponse extends Omit<Todo, 'id'> {
+  _id: string; // MongoDB ID
 }
