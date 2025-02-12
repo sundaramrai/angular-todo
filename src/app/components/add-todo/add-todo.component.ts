@@ -5,34 +5,28 @@ import { Todo } from '../../Todo';
   selector: 'app-add-todo',
   standalone: false,
   templateUrl: './add-todo.component.html',
-  styleUrls: ['./add-todo.component.css'], // why [] is used?
-  // [] is used to include the CSS file because it is an array of strings. If you have multiple CSS files, you can include them all in the array.
+  styleUrls: ['./add-todo.component.css'],
 })
 export class AddTodoComponent {
-  @Output() todoAdd = new EventEmitter<Todo>();
+  @Output() todoAdd = new EventEmitter<Omit<Todo, 'id'>>(); // ✅ Emit without `id`
 
   todoTitle: string = '';
   todoDescription: string = '';
 
   onSubmit() {
-    if (this.todoTitle.trim()) {
-      const newTodo: Todo = {
-        id: Date.now(),
-        title: this.todoTitle,
-        description: this.todoDescription,
-        completed: false,
-      };
-      // console.log('Creating new todo:', {
-      //   title: this.todoTitle,
-      //   description: this.todoDescription,
-      //   timestamp: new Date().toLocaleString(),
-      // });
-
-      this.todoAdd.emit(newTodo);
-      this.todoTitle = '';
-      this.todoDescription = '';
-    } else {
+    if (!this.todoTitle.trim()) {
       alert('Todo title is required to add a new todo.');
+      return;
     }
+
+    const newTodo = {
+      title: this.todoTitle,
+      description: this.todoDescription,
+      completed: false,
+    };
+
+    this.todoAdd.emit(newTodo); // ✅ No `id`, let backend generate `_id`
+    this.todoTitle = '';
+    this.todoDescription = '';
   }
 }
