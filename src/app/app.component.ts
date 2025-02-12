@@ -1,6 +1,6 @@
-// src/app/app.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -14,25 +14,24 @@ export class AppComponent implements OnInit {
   isRegisterPage = false;
   isLoggedIn = false;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.isLoginPage = event.url === '/login';
         this.isRegisterPage = event.url === '/register';
-        this.isLoggedIn = !!localStorage.getItem('loggedInUser');
+        this.isLoggedIn = this.authService.isLoggedIn();
 
-        // Redirect logged-in users away from login and register pages
+        // ✅ Prevent unnecessary redirects
         if (this.isLoggedIn && (this.isLoginPage || this.isRegisterPage)) {
-          this.router.navigate(['/todo']);
+          if (this.router.url !== '/todo') {
+            console.log("🔄 Redirecting to /todo (already logged in)");
+            this.router.navigate(['/todo']);
+          }
         }
 
-        // Redirect non-logged-in users away from todo page
         if (!this.isLoggedIn && event.url === '/todo') {
-          if (this.isLoginPage) {
-            this.router.navigate(['/login']);
-          } else if (this.isRegisterPage) {
-            this.router.navigate(['/register']);
-          } else {
+          if (this.router.url !== '/login') {
+            console.log("🔄 Redirecting to /login (user not logged in)");
             this.router.navigate(['/login']);
           }
         }
@@ -41,59 +40,63 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isLoggedIn = !!localStorage.getItem('loggedInUser');
-    this.checkLoginTimestamp();
-    // Check if user is not logged in and trying to access todo page
-    if (!this.isLoggedIn && this.router.url === '/todo') {
+    this.isLoggedIn = !!localStorage.getItem('token');
+
+    // ✅ Prevent redundant navigation loops
+    if (!this.isLoggedIn && this.router.url !== '/login') {
+      console.log("🔄 Redirecting to login page (user not logged in)");
       this.router.navigate(['/login']);
     }
+
+    // ✅ Check if auto-logout should be triggered
+    this.checkLoginTimestamp();
   }
 
   checkLoginTimestamp() {
     const loginTimestamp = localStorage.getItem('loginTimestamp');
     if (loginTimestamp) {
       const currentTime = Date.now();
-      const twelveHours = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+      const twelveHours = 12 * 60 * 60 * 1000;
+
       if (currentTime - parseInt(loginTimestamp, 10) > twelveHours) {
+        console.log("🔴 Auto-logging out due to inactivity");
         this.logout();
       } else {
-        this.setLogoutTimer(twelveHours - (currentTime - parseInt(loginTimestamp, 10)));
-        this.router.navigate(['/todo']);
+        const remainingTime = twelveHours - (currentTime - parseInt(loginTimestamp, 10));
+        console.log(`⏳ Setting auto-logout timer for ${remainingTime / 1000 / 60} minutes`);
+        this.setLogoutTimer(remainingTime);
       }
     }
   }
 
   setLogoutTimer(timeout: number) {
     setTimeout(() => {
+      console.log("⏳ Auto-logging out user...");
       this.logout();
     }, timeout);
   }
 
   logout() {
+    console.log("🔴 Logging out user...");
+
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('loginTimestamp');
-    this.isLoggedIn = false;
-    this.router.navigate(['/login']);
-    console.log('User logged out automatically after 12 hours');
-  }
+    localStorage.removeItem('token');
 
-  onLogin() {
-    if (this.isLoginPage || this.isRegisterPage) {
-      this.router.navigate(['/']);
-    } else {
+    this.isLoggedIn = false;
+
+    // ✅ Prevent multiple redirections
+    if (this.router.url !== '/login') {
+      console.log("🔄 Redirecting to login page...");
       this.router.navigate(['/login']);
     }
   }
 
-  onRegister() {
-    if (this.isRegisterPage) {
-      this.router.navigate(['/']);
-    } else {
-      this.router.navigate(['/register']);
-    }
+  onLogout() {
+    this.logout(); // ✅ Ensure logout works correctly
   }
 
-  onLogout() {
-    this.logout();
+  get loggedInUser(): string | null {
+    return this.authService.loggedInUser;
   }
 }

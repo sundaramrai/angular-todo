@@ -1,12 +1,16 @@
+<!-- src/app/app.component.html -->
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #198754">
   <div class="container-fluid">
     <div class="d-flex align-items-center">
       <img src="notes-64.webp" width="30" height="30" class="me-2" alt="Logo">
       <span class="navbar-brand text-white fw-bold">{{ title }}</span>
     </div>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+    <!-- ✅ Show toggler only when user is logged in -->
+    <button *ngIf="isLoggedIn" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <form class="d-flex ms-auto">
         <button *ngIf="isLoggedIn" class="btn btn-outline-light me-2" type="button" (click)="onLogout()">
@@ -16,4 +20,5 @@
     </div>
   </div>
 </nav>
+
 <router-outlet></router-outlet>
