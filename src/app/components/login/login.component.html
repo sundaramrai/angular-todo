@@ -2,68 +2,64 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 70px);">
   <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%">
     <div class="container mt-4" style="width: 100%">
-      <h2 class="mb-4 text-center">Login Page</h2>
+      <h2 class="mb-4 text-center fw-bold">Login</h2>
+
+      <!-- Error Alert -->
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+      </div>
+
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
         <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
+          <label for="username" class="form-label fw-bold">Username</label>
           <input
             type="text"
             class="form-control"
             id="username"
             formControlName="username"
+            placeholder="Enter username"
+            [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
             required
           />
-          <div
-            *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
-            class="text-danger"
-          >
-            <div *ngIf="loginForm.get('username')?.hasError('required')">
-              Username is required
-            </div>
-            <div *ngIf="loginForm.get('username')?.hasError('invalidUsername')">
-              Invalid username
-            </div>
+          <div class="invalid-feedback" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+            <div *ngIf="loginForm.get('username')?.errors?.['required']">Username is required</div>
+            <div *ngIf="loginForm.get('username')?.errors?.['invalidUsername']">Invalid username format</div>
           </div>
         </div>
+
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            formControlName="password"
-            required
-          />
-          <div
-            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-            class="text-danger"
-          >
-            <div *ngIf="loginForm.get('password')?.hasError('required')">
-              Password is required
-            </div>
-            <div *ngIf="loginForm.get('password')?.hasError('minlength')">
-              Password: Min 8 characters
-            </div>
-            <div *ngIf="loginForm.get('password')?.hasError('invalidPassword')">
-              Password: 2 digits, 1 special, 2 uppercase, lowercase
+          <label for="password" class="form-label fw-bold">Password</label>
+          <div class="input-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control"
+              id="password"
+              formControlName="password"
+              placeholder="Enter password"
+              [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              required
+            />
+            <span class="input-group-text" (click)="togglePasswordVisibility()" style="cursor: pointer;">
+              <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </span>
+            <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <div *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</div>
+              <div *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</div>
+              <div *ngIf="loginForm.get('password')?.errors?.['invalidPassword']">
+                Password must contain at least 2 numbers, 2 uppercase letters, 1 special character, and lowercase letters
+              </div>
             </div>
           </div>
         </div>
-        <div class="d-grid mb-3">
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="loginForm.invalid || isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            {{ isLoading ? 'Logging in...' : 'Login' }}
+          </button>
           <button type="button" class="btn btn-primary" (click)="onRegister()">
             Don't have an account? Register
-          </button>
-        </div>
-        <div *ngIf="errorMessage" class="text-danger mb-3">
-          {{ errorMessage }}
-        </div>
-        <div class="d-grid mb-3">
-          <button
-            type="submit"
-            class="btn btn-success"
-            [disabled]="loginForm.invalid"
-          >
-            Login
           </button>
         </div>
       </form>

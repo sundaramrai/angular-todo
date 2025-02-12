@@ -1,7 +1,7 @@
-// src/app/components/login/login.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -10,10 +10,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
+  isLoading = false;
   loginForm: FormGroup;
   errorMessage: string | null = null;
+  showPassword = false;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, this.usernameValidator]],
       password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
@@ -21,64 +23,51 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    const loggedInUser = localStorage.getItem('loggedInUser');
-    if (loggedInUser) {
+    // ✅ Check if user is already logged in
+    if (this.authService.isLoggedIn()) {
+      console.log("🔄 User already logged in, redirecting...");
       this.router.navigate(['/todo']);
     }
   }
 
   usernameValidator(control: any) {
     const username = control.value;
-
-    if (!username) {
-      return null;
-    }
+    if (!username) return null;
 
     const isNumeric = /^\d+$/.test(username);
-    if (isNumeric) {
-      return { invalidUsername: true };
-    }
+    if (isNumeric) return { invalidUsername: true };
 
     const alphabeticCount = (username.match(/[a-zA-Z]/g) || []).length;
-    if (alphabeticCount < 3) {
-      return { invalidUsername: true };
-    }
+    if (alphabeticCount < 3) return { invalidUsername: true };
 
-    if (username === '_') {
-      return { invalidUsername: true };
-    }
+    if (username === '_') return { invalidUsername: true };
 
     const hasInvalidChars = /[^a-zA-Z0-9_]/.test(username);
-    if (hasInvalidChars) {
-      return { invalidUsername: true };
-    }
+    if (hasInvalidChars) return { invalidUsername: true };
 
     return null;
   }
 
   onUsernameInput(event: any) {
-    const input = event.target;
-    input.value = input.value.toLowerCase();
+    event.target.value = event.target.value.toLowerCase();
   }
 
   passwordValidator(control: any) {
     const password = control.value;
-
-    if (!password) {
-      return null;
-    }
+    if (!password) return null;
 
     const numberCount = (password.match(/\d/g) || []).length;
     const upperCaseCount = (password.match(/[A-Z]/g) || []).length;
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
 
-    const valid = numberCount >= 2 && upperCaseCount >= 2 && hasSpecialChar && hasLowerCase;
+    return numberCount >= 2 && upperCaseCount >= 2 && hasSpecialChar && hasLowerCase
+      ? null
+      : { invalidPassword: true };
+  }
 
-    if (!valid) {
-      return { invalidPassword: true };
-    }
-    return null;
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   onLogin() {
@@ -86,36 +75,31 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const { username, password } = this.loginForm.value;
+    this.isLoading = true;
+    this.errorMessage = null;
 
-    const savedData = JSON.parse(localStorage.getItem('registerData') || '[]');
+    const credentials = this.loginForm.value;
 
-    const user = savedData.find((user: any) => user.username === username && user.password === password);
+    this.authService.login(credentials).subscribe({
+      next: (response) => {
+        console.log("✅ Login successful:", response);
 
-    if (user) {
-      localStorage.setItem('loggedInUser', JSON.stringify(user));
-      localStorage.setItem('loginTimestamp', Date.now().toString());
-      this.setLogoutTimer();
-      this.router.navigate(['/todo']);
-      console.log('Login successful:', this.loginForm.value);
-    } else {
-      this.errorMessage = 'Invalid username or password';
-      console.log('Login failed:', this.loginForm.value);
-    }
-  }
+        // ✅ Store token and user details in localStorage
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('loggedInUser', response.user.username);
+        localStorage.setItem('loginTimestamp', Date.now().toString());
 
-  setLogoutTimer() {
-    const twelveHours = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
-    setTimeout(() => {
-      this.logout();
-    }, twelveHours);
-  }
+        this.isLoading = false;
+        this.router.navigate(['/todo']);
+      },
+      error: (error) => {
+        console.error("❌ Login failed:", error);
+        this.isLoading = false;
+        this.errorMessage = error.error?.message || 'Login failed';
+      }
+    });
 
-  logout() {
-    localStorage.removeItem('loggedInUser');
-    localStorage.removeItem('loginTimestamp');
-    this.router.navigate(['/login']);
-    console.log('User logged out automatically after 12 hours');
+    this.loginForm.reset();
   }
 
   onRegister() {
