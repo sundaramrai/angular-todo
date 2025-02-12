@@ -1,7 +1,8 @@
 // src/app/components/register/register.component.ts
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 // import { of, map, delay } from 'rxjs';
 
 @Component({
@@ -11,30 +12,28 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent implements OnInit {
+  isLoading = false;
   registerForm: FormGroup;
   errorMessage: string | null = null;
+  showPassword = false;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.registerForm = this.fb.group({
-      // similar to username do for email
       email: ['', [Validators.required, this.localEmailValidator], [this.existingEmailValidator]],
-      // email: ['', [Validators.required, this.localEmailValidator], [this.existingEmailValidator()]],
-      // username: ['', [Validators.required, this.localUsernameValidator], [this.existingUsernameValidator()] ],
       username: ['',[Validators.required, this.localUsernameValidator, this.existingUsernameValidator],],
       password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
       confirmPassword: ['', Validators.required],
       phoneNumbers: this.fb.array([this.createPhoneNumber()]),
-      // addresses: this.fb.array([this.createAddress()]),
     });
   }
 
   ngOnInit() {
-    const loggedInUser = localStorage.getItem('loggedInUser');
-    if (loggedInUser) {
-      this.router.navigate(['/todo']);
-    }
-    // Log all registered users stored in local storage
-    const registeredUsers = JSON.parse(localStorage.getItem('registerData') || '[]');
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.router.navigate(['/todo']);
+      }
+    });
+    // const registeredUsers = JSON.parse(localStorage.getItem('registerData') || '[]');
     // console.log('Registered Users:', registeredUsers);
   }
 
@@ -42,21 +41,11 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('phoneNumbers') as FormArray;
   }
 
-  // get addresses(): FormArray {
-  //   return this.registerForm.get('addresses') as FormArray;
-  // }
-
   createPhoneNumber(): FormGroup {
     return this.fb.group({
       number: ['', [Validators.required, this.phoneNumberValidator]],
     });
   }
-
-  // createAddress(): FormGroup {
-  //   return this.fb.group({
-  //     address: ['', [Validators.required, this.addressValidator]],
-  //   });
-  // }
 
   addPhoneNumber() {
     this.phoneNumbers.push(this.createPhoneNumber());
@@ -65,14 +54,6 @@ export class RegisterComponent implements OnInit {
   removePhoneNumber(index: number) {
     this.phoneNumbers.removeAt(index);
   }
-
-  // addAddress() {
-  //   this.addresses.push(this.createAddress());
-  // }
-
-  // removeAddress(index: number) {
-  //   this.addresses.removeAt(index);
-  // }
 
   // Existing synchronous validation for username
   localUsernameValidator(control: AbstractControl): ValidationErrors | null {
@@ -94,31 +75,9 @@ export class RegisterComponent implements OnInit {
     return null;
   }
 
-  // New async validator to check if username exists
-  // This is used in the case when HTTP requests are made to server to check if username exists
-  // existingUsernameValidator(): AsyncValidatorFn {
-  //   return (control: AbstractControl) => {
-  //     const username = control.value;
-
-  //     // Simulate an API call to check username (using local storage here)
-  //     return of(localStorage.getItem('registerData'))
-  //       .pipe(
-  //         delay(500), // Simulate network latency
-  //         map((data) => {
-  //           const registeredUsers = JSON.parse(data || '[]');
-  //           const exists = registeredUsers.some((user: any) => user.username === username);
-
-  //           return exists ? { usernameExists: true } : null;
-  //         })
-  //       );
-  //   };
-  // }
-
   // This is used in the case when we want to check if username exists synchronously (without making HTTP requests)
   existingUsernameValidator(control: AbstractControl): ValidationErrors | null {
     const username = control.value;
-
-    // Simulate an API call to check username (using local storage here)
     const data = localStorage.getItem('registerData');
     const registeredUsers = JSON.parse(data || '[]');
     const exists = registeredUsers.some((user: any) => user.username === username);
@@ -133,18 +92,14 @@ export class RegisterComponent implements OnInit {
 
   passwordValidator(control: any) {
     const password = control.value;
-
     if (!password) {
       return null;
     }
-
     const numberCount = (password.match(/\d/g) || []).length;
     const upperCaseCount = (password.match(/[A-Z]/g) || []).length;
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
-
     const valid = numberCount >= 2 && upperCaseCount >= 2 && hasSpecialChar && hasLowerCase;
-
     if (!valid) {
       return { invalidPassword: true };
     }
@@ -176,107 +131,57 @@ export class RegisterComponent implements OnInit {
     this.phoneNumbers.at(index).get('number')?.setValue(cleanedInput);
   }
 
-  // addressValidator(control: any) {
-  //   const address = control.value;
-
-  //   if (address && address.trim().length > 5 && /^[a-zA-Z0-9\s,.'-]*$/.test(address)) {
-  //     return null;
-  //   }
-
-  //   return { invalidAddress: true };
-  // }
-
-  // emailValidator(control: any) {
-  //   const email = control.value;
-  //   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-  //   if (!emailPattern.test(email)) {
-  //     return { invalidEmailFormat: true };
-  //   }
-
-  //   const [local, domain] = email.split('@');
-
-  //   if (domain && domain.indexOf('.') !== -1) {
-  //     return null;
-  //   }
-
-  //   return { invalidEmailDomain: true };
-  // }
-
   localEmailValidator(control: AbstractControl): ValidationErrors | null {
     const email = control.value;
-
     if (!email) return null;
-
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) return { invalidEmailFormat: true };
-
     const [local, domain] = email.split('@');
-
     if (domain && domain.indexOf('.') !== -1) return null;
-
     return { invalidEmailDomain: true };
   }
 
-  // existingEmailValidator(): AsyncValidatorFn {
-  //   return (control: AbstractControl) => {
-  //     const email = control.value;
-
-  //     return of(localStorage.getItem('registerData'))
-  //       .pipe(
-  //         delay(500), // Simulate network latency
-  //         map((data) => {
-  //           const registeredUsers = JSON.parse(data || '[]');
-  //           const exists = registeredUsers.some((user: any) => user.email === email);
-
-  //           return exists ? { emailExists: true } : null;
-  //         })
-  //       );
-  //   };
-  // }
-
   existingEmailValidator(control: AbstractControl): ValidationErrors | null {
     const email = control.value;
-
     const data = localStorage.getItem('registerData');
     const registeredUsers = JSON.parse(data || '[]');
     const exists = registeredUsers.some((user: any) => user.email === email);
-
     return exists ? { emailExists: true } : null;
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   onRegister() {
     if (this.registerForm.invalid) {
       return;
     }
-    // Check if username already exists
-    const username = this.registerForm.get('username')?.value;
-    const registeredUsers = JSON.parse(localStorage.getItem('registerData') || '[]');
-    const existingUser = registeredUsers.find((user: any) => user.username === username);
-    if (existingUser) {
-      alert('Username already exists. Please choose a different username.');
-      return;
-    }
-
-    let existingData = JSON.parse(localStorage.getItem('registerData') || '[]');
-
-    if (!Array.isArray(existingData)) {
-      // console.error('Data in localStorage is not an array. Initializing as empty array.');
-      existingData = [];
-    }
-
-    const newUser = this.registerForm.value;
-    existingData.push(newUser);
-
-    localStorage.setItem('registerData', JSON.stringify(existingData));
+    this.isLoading = true;
+    this.errorMessage = null;
+    // check if user already exists
+    const userData = this.registerForm.value;
+    this.authService.register(userData).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        if (error.error.message.includes('username')) {
+          this.errorMessage = 'Username already exists. Please choose a different username.';
+        } else if (error.error.message.includes('email')) {
+          this.errorMessage = 'Email already exists. Please choose a different email.';
+        } else {
+          this.errorMessage = error.error.message || 'Registration failed';
+        }
+      }
+    });
 
     this.registerForm.reset();
     this.phoneNumbers.clear();
-    // this.addresses.clear();
     this.phoneNumbers.push(this.createPhoneNumber());
-    // this.addresses.push(this.createAddress());
-    this.router.navigate(['/']);
-    // console.log('New User registered:', newUser);
+    console.log('User registered');
   }
 
   onLogin() {
