@@ -7,18 +7,35 @@
           <h2 class="mb-0">Todo List</h2>
         </div>
         <div class="card-body">
+          <!-- Error Alert -->
+          <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" (click)="error = null"></button>
+          </div>
+
           <app-add-todo (todoAdd)="addTodo($event)"></app-add-todo>
 
-          <div *ngIf="todos.length === 0" class="alert alert-warning text-center mt-3">
-            No todos found
-          </div>
-          <div *ngIf="todos.length > 0 && todos.length < 10" class="alert alert-success text-center mt-3">
-            {{ todos.length }} todos found
-          </div>
-          <div *ngIf="todos.length >= 10" class="alert alert-danger text-center mt-3">
-            You have too many todos
+          <!-- Loading Spinner -->
+          <div *ngIf="loading" class="text-center my-4">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
 
+          <!-- Todo Count Alerts -->
+          <ng-container *ngIf="!loading">
+            <div *ngIf="todos.length === 0" class="alert alert-warning text-center mt-3">
+              No todos found
+            </div>
+            <div *ngIf="todos.length > 0 && todos.length < 10" class="alert alert-success text-center mt-3">
+              {{ todos.length }} todos found
+            </div>
+            <div *ngIf="todos.length >= 10" class="alert alert-danger text-center mt-3">
+              You have too many todos
+            </div>
+          </ng-container>
+
+          <!-- Todo List -->
           <ul class="list-group mt-4">
             <app-todo-item
               *ngFor="let todo of todos"
@@ -26,9 +43,10 @@
               (todoDelete)="deleteTodo($event)"
               (todoUpdate)="updateTodo($event)"
               (todoToggle)="toggleComplete($event)"
-              class="list-group-item list-group-item-action"
-            ></app-todo-item>
+              class="list-group-item list-group-item-action">
+          </app-todo-item>
           </ul>
+
         </div>
         <div class="card-footer text-center">
           <small class="text-muted">Manage your tasks efficiently</small>
@@ -36,5 +54,7 @@
       </div>
     </div>
   </div>
-  <div class="mt-3 text-center fw-bold text-muted fs-6">Logged in user: {{ loggedInUser.username }} - {{ loggedInUser.email }}</div>
+  <div class="mt-3 text-center fw-bold text-muted fs-6" *ngIf="username">
+    Logged in as: {{ username }}
+  </div>
 </div>
