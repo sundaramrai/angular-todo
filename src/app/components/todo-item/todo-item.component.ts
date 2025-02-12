@@ -1,81 +1,54 @@
 // src/app/components/todo-item/todo-item.component.ts
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../Todo';
 
 @Component({
   selector: 'app-todo-item',
   standalone: false,
   templateUrl: './todo-item.component.html',
-  styleUrls: ['./todo-item.component.css'],
+  styleUrls: ['./todo-item.component.css']
 })
 export class TodoItemComponent {
   @Input() todo!: Todo;
-  @Output() todoDelete = new EventEmitter<Todo>();
+  @Output() todoDelete = new EventEmitter<string>();
   @Output() todoUpdate = new EventEmitter<Todo>();
   @Output() todoToggle = new EventEmitter<Todo>();
 
-  isEditing: boolean = false;
-  editTitle: string = '';
-  editDescription: string = '';
+  isEditing = false;
+  editTitle = '';
+  editDescription = '';
 
-  onDelete() {
-    // console.log('Initiating delete for todo:', {
-    //   title: this.todo.title,
-    //   id: this.todo.id,
-    //   timestamp: new Date().toLocaleString(),
-    // });
-    this.todoDelete.emit(this.todo);
-  }
-
-  onToggleComplete() {
-    // console.log('Initiating toggle completion for todo:', {
-    //   title: this.todo.title,
-    //   id: this.todo.id,
-    //   currentStatus: this.todo.completed,
-    //   timestamp: new Date().toLocaleString(),
-    // });
-    this.todoToggle.emit(this.todo);
-  }
+  constructor(private todoService: TodoService) {}
 
   startEdit() {
     this.isEditing = true;
     this.editTitle = this.todo.title;
-    this.editDescription = this.todo.description;
-    // console.log('Started editing todo:', {
-    //   id: this.todo.id,
-    //   title: this.todo.title,
-    //   timestamp: new Date().toLocaleString(),
-    // });
+    this.editDescription = this.todo.description || '';
   }
 
   saveEdit() {
-    if (this.editTitle.trim() && this.editDescription.trim()) {
-      const updatedTodo: Todo = {
-        ...this.todo,
-        title: this.editTitle,
-        description: this.editDescription,
-      };
-
-      // console.log('Saving edited todo:', {
-      //   id: this.todo.id,
-      //   oldTitle: this.todo.title,
-      //   newTitle: this.editTitle,
-      //   oldDescription: this.todo.description,
-      //   newDescription: this.editDescription,
-      //   timestamp: new Date().toLocaleString(),
-      // });
-
-      this.todoUpdate.emit(updatedTodo);
-      this.isEditing = false;
-    }
+    this.todoUpdate.emit({
+      id: this.todo.id,
+      title: this.editTitle,
+      description: this.editDescription,
+      completed: this.todo.completed
+    }); // ✅ Emits full updated Todo object
+    this.isEditing = false;
   }
 
+  onDelete() {
+  console.log("🗑️ Emitting delete event for ID:", this.todo.id);
+  this.todoDelete.emit(this.todo.id); // ✅ Pass `_id` as a string
+}
+
+onToggleComplete() {
+  console.log("🔄 Emitting toggle event for ID:", this.todo.id, "Current Status:", this.todo.completed);
+  this.todoToggle.emit(this.todo); // ✅ Emit entire todo object
+}
+
+
   cancelEdit() {
-    // console.log('Cancelled editing todo:', {
-    //   id: this.todo.id,
-    //   title: this.todo.title,
-    //   timestamp: new Date().toLocaleString(),
-    // });
     this.isEditing = false;
   }
 }
