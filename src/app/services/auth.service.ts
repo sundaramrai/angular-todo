@@ -3,8 +3,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+// import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = `${environment.apiUrl}/todos`;
 
 @Injectable({
   providedIn: 'root'
