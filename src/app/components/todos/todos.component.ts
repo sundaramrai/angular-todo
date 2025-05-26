@@ -15,12 +15,27 @@ export class TodosComponent implements OnInit {
   loading = false;
   error: string | null = null;
   username: string | null = null; // ✅ Added username property
+  connectionStatus: 'checking' | 'connected' | 'error' = 'checking';
 
   constructor(private todoService: TodoService, private authService: AuthService) {}
 
   ngOnInit() {
-    this.fetchTodos();
+    this.checkApiConnection();
     this.username = this.authService.loggedInUser;
+  }
+
+  checkApiConnection() {
+    this.todoService.checkApiHealth().subscribe(
+      () => {
+        this.connectionStatus = 'connected';
+        this.fetchTodos();
+      },
+      (error) => {
+        console.error("❌ API connection error:", error);
+        this.connectionStatus = 'error';
+        this.error = "Cannot connect to the API. Please try again later.";
+      }
+    );
   }
 
   fetchTodos() {
@@ -38,7 +53,11 @@ export class TodosComponent implements OnInit {
       },
       (error) => {
         console.error("❌ Error fetching todos:", error);
-        this.error = "Error fetching todos";
+        if (error.status === 0) {
+          this.error = "Cannot connect to the server. CORS issue detected.";
+        } else {
+          this.error = error.error?.message || "Error fetching todos";
+        }
         this.loading = false;
       }
     );

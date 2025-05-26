@@ -12,8 +12,7 @@
             {{ error }}
             <button type="button" class="btn-close" (click)="error = null"></button>
           </div>
-
-          <app-add-todo (todoAdd)="addTodo($event)"></app-add-todo>
+          <app-add-todo *ngIf="connectionStatus !== 'error'" (todoAdd)="addTodo($event)"></app-add-todo>
 
           <!-- Loading Spinner -->
           <div *ngIf="loading" class="text-center my-4">
@@ -23,7 +22,7 @@
           </div>
 
           <!-- Todo Count Alerts -->
-          <ng-container *ngIf="!loading">
+          <ng-container *ngIf="!loading && connectionStatus !== 'error'">
             <div *ngIf="todos.length === 0" class="alert alert-warning text-center mt-3">
               No todos found
             </div>
@@ -36,7 +35,7 @@
           </ng-container>
 
           <!-- Todo List -->
-          <ul class="list-group mt-4">
+          <ul class="list-group mt-4" *ngIf="connectionStatus !== 'error'">
             <app-todo-item
               *ngFor="let todo of todos"
               [todo]="todo"
