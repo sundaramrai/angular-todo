@@ -11,7 +11,7 @@ This project is a simple Todo application built with Angular. It allows users to
 - [Building](#building)
 - [Running Unit Tests](#running-unit-tests)
 - [Running End-to-End Tests](#running-end-to-end-tests)
-- [Additional Resources](#additional-resources)
+- [Deployment Notes](#deployment-notes)
 - [Additional Resources](#additional-resources)
 - [License](#license)
 
@@ -19,8 +19,9 @@ This project is a simple Todo application built with Angular. It allows users to
 
 - User registration and login
 - Add, edit, delete, and toggle completion status of todo items
-- Persistent storage using local storage
+- Persistent storage using MongoDB
 - Automatic logout after 12 hours of inactivity
+- Cross-domain API communication with CORS support
 
 ## Getting Started
 
@@ -84,6 +85,28 @@ ng e2e
 ```
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Deployment Notes
+
+When deploying the application:
+
+1. Ensure the backend CORS settings include your frontend domain
+2. Update the environment files with the correct API URL
+3. Set environment variables on the backend hosting service
+
+For server deployment, ensure these environment variables are set:
+
+- `MONGO_URI`: MongoDB connection string
+- `JWT_SECRET`: Secret key for JWT token signing
+- `PORT`: The port to run the server (if not using default)
+
+### CORS Issues
+
+If experiencing CORS issues:
+
+- Verify that the frontend domain is listed in the backend's CORS configuration
+- Ensure authentication headers are properly set
+- Check browser console for specific CORS error messages
 
 ## Additional Resources
 
